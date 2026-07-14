@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error - Money Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/css/custom.css">
+</head>
+<body>
+
+    <div class="auth-wrapper">
+        <div class="card auth-card text-center">
+            <div class="auth-header bg-danger">
+                <h2 class="fw-bold"><i class="bi bi-exclamation-triangle me-2"></i>Application Error</h2>
+                <p class="text-white-50 mb-0">Something went wrong</p>
+            </div>
+            <div class="card-body p-4 p-md-5">
+                <div class="alert alert-danger mb-4" role="alert">
+                    <h5 class="alert-heading fw-semibold">Details:</h5>
+                    <p class="mb-0" th:text="${errorMessage}">An error occurred.</p>
+                </div>
+                <a href="/" class="btn btn-primary w-100 py-3 fw-bold">Go to Safety</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

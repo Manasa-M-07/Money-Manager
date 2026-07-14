@@ -1,0 +1,114 @@
+give a final <!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: html_head('Budget Management')}"></head>
+<body>
+
+    <div class="container-fluid">
+        <div class="row">
+            
+            <!-- Sidebar -->
+            <div th:replace="~{layout :: sidebar('budget')}"></div>
+            
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+                
+                <!-- Navbar -->
+                <div th:replace="~{layout :: navbar}"></div>
+                
+                <!-- Notifications -->
+                <div class="mt-4">
+                    <div th:if="${success}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                        <i class="bi bi-check-circle-fill me-2"></i>
+                        <span th:text="${success}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </div>
+
+                <!-- Page Title -->
+                <div class="my-4">
+                    <h2 class="fw-bold mb-1">Budget Planner</h2>
+                    <p class="text-muted mb-0">Define monthly limits to keep your expenses in check</p>
+                </div>
+
+                <div class="row g-4">
+                    
+                    <!-- Left: Budget Status -->
+                    <div class="col-lg-7">
+                        <div class="card border-0 shadow-sm p-4 bg-white h-100">
+                            <h5 class="fw-bold mb-4">Monthly Budget Status</h5>
+                            
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted fw-semibold">Current Month Limit</span>
+                                    <span class="fw-bold text-dark" th:text="'₹' + ${#numbers.formatDecimal(monthlyBudget, 1, 2)}">₹0.00</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted fw-semibold">Expenses Spent</span>
+                                    <span class="fw-bold text-danger" th:text="'₹' + ${#numbers.formatDecimal(monthlyExpenses, 1, 2)}">₹0.00</span>
+                                </div>
+                                <div class="d-flex justify-content-between border-top pt-3">
+                                    <span class="text-muted fw-bold">Remaining Balance</span>
+                                    <span class="fw-bold fs-5" 
+                                          th:classappend="${remainingBudget >= 0} ? 'text-success' : 'text-danger'"
+                                          th:text="'₹' + ${#numbers.formatDecimal(remainingBudget, 1, 2)}">₹0.00</span>
+                                </div>
+                            </div>
+
+                            <!-- Budget Progress Bar -->
+                            <div class="mb-3" th:if="${monthlyBudget > 0}">
+                                <div class="d-flex justify-content-between mb-1 small text-muted">
+                                    <span>Spending Progress</span>
+                                    <span th:text="${#numbers.formatDecimal((monthlyExpenses / monthlyBudget) * 100, 1, 0)} + '%'">0%</span>
+                                </div>
+                                <div class="progress" style="height: 12px;">
+                                    <div class="progress-bar rounded" role="progressbar" 
+                                         th:style="'width: ' + ${((monthlyExpenses / monthlyBudget) * 100) > 100 ? 100 : ((monthlyExpenses / monthlyBudget) * 100)} + '%'" 
+                                         th:classappend="${(monthlyExpenses / monthlyBudget) <= 0.75} ? 'bg-success' : (((monthlyExpenses / monthlyBudget) <= 1.0) ? 'bg-warning' : 'bg-danger')">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div th:if="${monthlyBudget > 0 && monthlyExpenses > monthlyBudget}" class="alert alert-danger mb-0 mt-3 shadow-sm">
+                                <i class="bi bi-exclamation-octagon-fill me-2"></i>
+                                <strong>Warning:</strong> You have exceeded your budget of <strong>₹<span th:text="${#numbers.formatDecimal(monthlyBudget, 1, 2)}">0.00</span></strong> for this month! Consider trimming down on unnecessary expenditures.
+                            </div>
+                            
+                            <div th:if="${monthlyBudget == 0}" class="alert alert-light border text-center py-4 mb-0 mt-3">
+                                <i class="bi bi-info-circle text-primary fs-3 d-block mb-2"></i>
+                                <span>No budget set for this month. Set a budget on the right to start tracking.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Set / Update Budget Form -->
+                    <div class="col-lg-5">
+                        <div class="card border-0 shadow-sm p-4 bg-white h-100">
+                            <h5 class="fw-bold mb-4">Set / Update Budget</h5>
+                            
+                            <form th:action="@{/dashboard/budget/update}" method="POST">
+                                <div class="mb-3">
+                                    <label for="month" class="form-label">Target Month</label>
+                                    <input type="month" class="form-control" id="month" name="month" th:value="${currentMonth}" required>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="amount" class="form-label">Budget Limit (₹)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">₹</span>
+                                        <input type="number" step="0.01" class="form-control" id="amount" name="amount" th:value="${monthlyBudget}" min="0" required placeholder="0.00">
+                                    </div>
+                                    <div class="form-text">Set your maximum spending limit for the selected month.</div>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100 py-3 fw-bold">Set Budget</button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <div th:replace="~{layout :: footer_scripts}"></div>
+</body>
+</html>

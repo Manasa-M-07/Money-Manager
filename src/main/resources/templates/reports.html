@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: html_head('Financial Reports')}"></head>
+<body>
+
+    <div class="container-fluid">
+        <div class="row">
+            
+            <!-- Sidebar -->
+            <div th:replace="~{layout :: sidebar('reports')}"></div>
+            
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+                
+                <!-- Navbar -->
+                <div th:replace="~{layout :: navbar}"></div>
+
+                <!-- Title -->
+                <div class="my-4">
+                    <h2 class="fw-bold mb-1">Financial Reports</h2>
+                    <p class="text-muted mb-0">Generate, search, and filter detailed reports on your finances</p>
+                </div>
+
+                <!-- Report Type Switcher & Filters -->
+                <div class="card border-0 shadow-sm p-4 mb-4 bg-white">
+                    <h5 class="fw-bold mb-3">Filters</h5>
+                    
+                    <form th:action="@{/dashboard/reports}" method="GET">
+                        <div class="row g-3 align-items-end">
+                            
+                            <!-- Type Switcher -->
+                            <div class="col-md-2">
+                                <label for="type" class="form-label small text-muted fw-bold">Report Type</label>
+                                <select class="form-select" id="type" name="type">
+                                    <option value="EXPENSE" th:selected="${type == 'EXPENSE'}">Expenses</option>
+                                    <option value="INCOME" th:selected="${type == 'INCOME'}">Income</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Text Search -->
+                            <div class="col-md-3">
+                                <label for="search" class="form-label small text-muted fw-bold">Search Description</label>
+                                <input type="text" class="form-control" id="search" name="search" th:value="${search}" placeholder="Keyword...">
+                            </div>
+
+                            <!-- Category Filter (visible for Expense only) -->
+                            <div class="col-md-2" id="categoryFilterDiv" th:style="${type == 'INCOME'} ? 'display:none;' : ''">
+                                <label for="category" class="form-label small text-muted fw-bold">Category</label>
+                                <select class="form-select" id="category" name="category">
+                                    <option value="ALL">All Categories</option>
+                                    <option th:each="cat : ${categories}" th:value="${cat}" th:text="${cat}" th:selected="${cat == category}"></option>
+                                </select>
+                            </div>
+
+                            <!-- Start Date -->
+                            <div class="col-md-2">
+                                <label for="startDate" class="form-label small text-muted fw-bold">Start Date</label>
+                                <input type="date" class="form-control" id="startDate" name="startDate" th:value="${startDate}">
+                            </div>
+
+                            <!-- End Date -->
+                            <div class="col-md-2">
+                                <label for="endDate" class="form-label small text-muted fw-bold">End Date</label>
+                                <input type="date" class="form-control" id="endDate" name="endDate" th:value="${endDate}">
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="col-md-1 text-end">
+                                <button type="submit" class="btn btn-primary w-100 py-2"><i class="bi bi-search"></i></button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Summaries (Category-wise breakdown & Current Month Summary cards) -->
+                <div class="row g-4 mb-4">
+                    
+                    <!-- Monthly Overview Card -->
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm p-4 bg-white h-100">
+                            <h5 class="fw-bold mb-4">Current Month Income vs Expense</h5>
+                            <div class="table-responsive">
+                                <table class="table align-middle">
+                                    <tbody>
+                                        <tr>
+                                            <td><i class="bi bi-arrow-up-circle-fill text-success me-2"></i><strong>Monthly Income</strong></td>
+                                            <td class="text-end text-success fw-bold" th:text="'₹' + ${#numbers.formatDecimal(monthlyIncome, 1, 2)}">₹0.00</td>
+                                        </tr>
+                                        <tr>
+                                            <td><i class="bi bi-arrow-down-circle-fill text-danger me-2"></i><strong>Monthly Expense</strong></td>
+                                            <td class="text-end text-danger fw-bold" th:text="'₹' + ${#numbers.formatDecimal(monthlyExpense, 1, 2)}">₹0.00</td>
+                                        </tr>
+                                        <tr class="border-top-2">
+                                            <td><strong>Net Savings</strong></td>
+                                            <td class="text-end fw-bold fs-5" 
+                                                th:classappend="${(monthlyIncome - monthlyExpense) >= 0} ? 'text-success' : 'text-danger'"
+                                                th:text="'₹' + ${#numbers.formatDecimal(monthlyIncome - monthlyExpense, 1, 2)}">₹0.00</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Category Breakdown Card -->
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm p-4 bg-white h-100">
+                            <h5 class="fw-bold mb-3">Category-wise Expense Breakdown</h5>
+                            <div class="table-responsive" style="max-height: 200px; overflow-y: auto;">
+                                <table class="table table-hover mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Category</th>
+                                            <th class="text-end">Total Spent</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="row : ${categoryBreakdown}">
+                                            <td th:text="${row[0]}">Food</td>
+                                            <td class="text-end text-danger fw-bold" th:text="'₹' + ${#numbers.formatDecimal(row[1], 1, 2)}">₹0.00</td>
+                                        </tr>
+                                        <tr th:if="${categoryBreakdown.isEmpty()}">
+                                            <td colspan="2" class="text-center text-muted py-3">No expenses recorded for this month.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Report Results Card -->
+                <div class="card border-0 shadow-sm p-4 bg-white">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bold mb-0">Report Details</h5>
+                        <div class="text-end">
+                            <span class="text-muted me-2">Total Amount:</span>
+                            <span class="fs-5 fw-bold" 
+                                  th:classappend="${type == 'INCOME'} ? 'text-success' : 'text-danger'"
+                                  th:text="'₹' + ${#numbers.formatDecimal(totalReportAmount, 1, 2)}">₹0.00</span>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th th:text="${type == 'INCOME'} ? 'Source' : 'Category'">Category / Source</th>
+                                    <th>Description</th>
+                                    <th class="text-end">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="row : ${reportData}">
+                                    <td th:text="${row.date}">2026-07-10</td>
+                                    <td>
+                                        <span class="fw-semibold" th:text="${type == 'INCOME'} ? ${row.source} : ${row.category}">Category</span>
+                                    </td>
+                                    <td th:text="${row.description != null && !row.description.isEmpty() ? row.description : 'N/A'}">Description</td>
+                                    <td class="text-end fw-bold" 
+                                        th:classappend="${type == 'INCOME'} ? 'text-success' : 'text-danger'"
+                                        th:text="${type == 'INCOME'} ? '+₹' + ${#numbers.formatDecimal(row.amount, 1, 2)} : '-₹' + ${#numbers.formatDecimal(row.amount, 1, 2)}">
+                                        ₹0.00
+                                    </td>
+                                </tr>
+                                <tr th:if="${reportData.isEmpty()}">
+                                    <td colspan="4" class="text-center text-muted py-4">No matching records found. Refine your filters.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <div th:replace="~{layout :: footer_scripts}"></div>
+    
+    <script>
+        // Toggle Category Filter based on Report Type
+        document.getElementById('type').addEventListener('change', function() {
+            var div = document.getElementById('categoryFilterDiv');
+            if (this.value === 'INCOME') {
+                div.style.display = 'none';
+            } else {
+                div.style.display = '';
+            }
+        });
+    </script>
+</body>
+</html>
