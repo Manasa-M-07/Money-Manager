@@ -1,0 +1,63 @@
+<div class="sidebar col-md-3 col-lg-2 d-md-block collapse p-3">
+    <div class="d-flex align-items-center mb-4 text-white text-decoration-none">
+        <span class="fs-4 fw-bold text-white"><i class="bi bi-wallet2 me-2"></i>MoneyManager</span>
+    </div>
+    <hr class="text-secondary">
+    
+    <ul class="nav nav-pills flex-column mb-auto">
+        <% if (user.role === 'USER') { %>
+            <li>
+                <a href="/dashboard" class="nav-link <%= activeTab === 'dashboard' ? 'active' : '' %>">
+                    <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                </a>
+            </li>
+            <li>
+                <a href="/dashboard/income" class="nav-link <%= activeTab === 'income' ? 'active' : '' %>">
+                    <i class="bi bi-graph-up-arrow me-2"></i> Income
+                </a>
+            </li>
+            <li>
+                <a href="/dashboard/expense" class="nav-link <%= activeTab === 'expense' ? 'active' : '' %>">
+                    <i class="bi bi-graph-down-arrow me-2"></i> Expenses
+                </a>
+            </li>
+            <li>
+                <a href="/dashboard/budget" class="nav-link <%= activeTab === 'budget' ? 'active' : '' %>">
+                    <i class="bi bi-sliders me-2"></i> Budgets
+                </a>
+            </li>
+            <li>
+                <a href="/dashboard/reports" class="nav-link <%= activeTab === 'reports' ? 'active' : '' %>">
+                    <i class="bi bi-file-earmark-bar-graph me-2"></i> Reports
+                </a>
+            </li>
+            <li>
+                <a href="/dashboard/profile" class="nav-link <%= activeTab === 'profile' ? 'active' : '' %>">
+                    <i class="bi bi-person-circle me-2"></i> Profile
+                </a>
+            </li>
+        <% } %>
+
+        <% if (user.role === 'ADMIN') { %>
+            <li>
+                <a href="/admin/dashboard" class="nav-link <%= activeTab === 'admin-dashboard' ? 'active' : '' %>">
+                    <i class="bi bi-speedometer2 me-2"></i> Admin Panel
+                </a>
+            </li>
+        <% } %>
+    </ul>
+    <hr class="text-secondary">
+    <div class="dropdown">
+        <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+            <img src="<%= user.profilePicture ? user.profilePicture : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80' %>" alt="" width="32" height="32" class="rounded-circle me-2">
+            <strong><%= user.name %></strong>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
+            <% if (user.role === 'USER') { %>
+                <li><a class="dropdown-menu-item dropdown-item" href="/dashboard/profile">Profile</a></li>
+                <li><hr class="dropdown-divider"></li>
+            <% } %>
+            <li><a class="dropdown-item" href="/logout">Sign out</a></li>
+        </ul>
+    </div>
+</div>

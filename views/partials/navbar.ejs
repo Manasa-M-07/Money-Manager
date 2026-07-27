@@ -1,0 +1,25 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom py-3 px-4">
+    <div class="container-fluid">
+        <button class="navbar-toggler d-md-none" type="button" data-bs-toggle="collapse" data-bs-target=".sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="d-flex ms-auto align-items-center">
+            <div class="me-3 text-end d-none d-sm-block">
+                <span class="text-muted d-block small">Logged in as</span>
+                <span class="fw-semibold"><%= user.name %></span>
+            </div>
+            <div class="flex-shrink-0 dropdown">
+                <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="<%= user.profilePicture ? user.profilePicture : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80' %>" alt="mdo" width="40" height="40" class="rounded-circle border border-2 border-primary-light">
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end text-small shadow" aria-labelledby="dropdownUser2">
+                    <% if (user.role === 'USER') { %>
+                        <li><a class="dropdown-item" href="/dashboard/profile">Profile</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                    <% } %>
+                    <li><a class="dropdown-item" href="/logout">Sign out</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>

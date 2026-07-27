@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<%- include('partials/header', { title: 'Budget Management' }) %>
+<body>
+
+    <div class="container-fluid">
+        <div class="row">
+            
+            <!-- Sidebar -->
+            <%- include('partials/sidebar', { activeTab: 'budget' }) %>
+            
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+                
+                <!-- Navbar -->
+                <%- include('partials/navbar') %>
+                
+                <!-- Notifications -->
+                <div class="mt-4">
+                    <% if (success) { %>
+                        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                            <i class="bi bi-check-circle-fill me-2"></i>
+                            <span><%= success %></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    <% } %>
+                </div>
+
+                <!-- Page Title -->
+                <div class="my-4">
+                    <h2 class="fw-bold mb-1">Budget Planner</h2>
+                    <p class="text-muted mb-0">Define monthly limits to keep your expenses in check</p>
+                </div>
+
+                <div class="row g-4">
+                    
+                    <!-- Left: Budget Status -->
+                    <div class="col-lg-7">
+                        <div class="card border-0 shadow-sm p-4 bg-white h-100">
+                            <h5 class="fw-bold mb-4">Monthly Budget Status</h5>
+                            
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted fw-semibold">Current Month Limit</span>
+                                    <span class="fw-bold text-dark">₹<%= formatDecimal(monthlyBudget) %></span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span class="text-muted fw-semibold">Expenses Spent</span>
+                                    <span class="fw-bold text-danger">₹<%= formatDecimal(monthlyExpenses) %></span>
+                                </div>
+                                <div class="d-flex justify-content-between border-top pt-3">
+                                    <span class="text-muted fw-bold">Remaining Balance</span>
+                                    <span class="fw-bold fs-5 <%= remainingBudget >= 0 ? 'text-success' : 'text-danger' %>">
+                                        ₹<%= formatDecimal(remainingBudget) %>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Budget Progress Bar -->
+                            <% if (monthlyBudget > 0) { 
+                                const ratio = monthlyExpenses / monthlyBudget;
+                                const percent = Math.round(ratio * 100);
+                                const progressWidth = percent > 100 ? 100 : percent;
+                                let barColor = 'bg-success';
+                                if (ratio > 0.75 && ratio <= 1.0) {
+                                    barColor = 'bg-warning';
+                                } else if (ratio > 1.0) {
+                                    barColor = 'bg-danger';
+                                }
+                            %>
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-1 small text-muted">
+                                        <span>Spending Progress</span>
+                                        <span><%= percent %>%</span>
+                                    </div>
+                                    <div class="progress" style="height: 12px;">
+                                        <div class="progress-bar rounded <%= barColor %>" role="progressbar" 
+                                             style="width: <%= progressWidth %>%">
+                                        </div>
+                                    </div>
+                                </div>
+                            <% } %>
+                            
+                            <% if (monthlyBudget > 0 && monthlyExpenses > monthlyBudget) { %>
+                                <div class="alert alert-danger mb-0 mt-3 shadow-sm">
+                                    <i class="bi bi-exclamation-octagon-fill me-2"></i>
+                                    <strong>Warning:</strong> You have exceeded your budget of <strong>₹<%= formatDecimal(monthlyBudget) %></strong> for this month! Consider trimming down on unnecessary expenditures.
+                                </div>
+                            <% } %>
+                            
+                            <% if (monthlyBudget == 0) { %>
+                                <div class="alert alert-light border text-center py-4 mb-0 mt-3">
+                                    <i class="bi bi-info-circle text-primary fs-3 d-block mb-2"></i>
+                                    <span>No budget set for this month. Set a budget on the right to start tracking.</span>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+
+                    <!-- Right: Set / Update Budget Form -->
+                    <div class="col-lg-5">
+                        <div class="card border-0 shadow-sm p-4 bg-white h-100">
+                            <h5 class="fw-bold mb-4">Set / Update Budget</h5>
+                            
+                            <form action="/dashboard/budget/update" method="POST">
+                                <div class="mb-3">
+                                    <label for="month" class="form-label">Target Month</label>
+                                    <input type="month" class="form-control" id="month" name="month" value="<%= currentMonth %>" required>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="amount" class="form-label">Budget Limit (₹)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">₹</span>
+                                        <input type="number" step="0.01" class="form-control" id="amount" name="amount" value="<%= monthlyBudget || '' %>" min="0" required placeholder="0.00">
+                                    </div>
+                                    <div class="form-text">Set your maximum spending limit for the selected month.</div>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100 py-3 fw-bold">Set Budget</button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <%- include('partials/footer_scripts') %>
+</body>
+</html>

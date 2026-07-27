@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<%- include('partials/header', { title: 'Dashboard' }) %>
+<body>
+
+    <div class="container-fluid">
+        <div class="row">
+            
+            <!-- Sidebar -->
+            <%- include('partials/sidebar', { activeTab: 'dashboard' }) %>
+            
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+                
+                <!-- Navbar -->
+                <%- include('partials/navbar') %>
+                
+                <!-- Notifications / Warnings -->
+                <div class="mt-4">
+                    <% if (success) { %>
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <span><%= success %></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    <% } %>
+                    
+                    <% if (error) { %>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <span><%= error %></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    <% } %>
+
+                    <% if (warning) { %>
+                        <div class="alert alert-warning alert-dismissible fade show shadow-sm" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            <span><%= warning %></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    <% } %>
+                    
+                    <% if (budgetExceeded) { %>
+                        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+                            <i class="bi bi-exclamation-octagon-fill me-2"></i>
+                            <strong>Warning:</strong> You have exceeded your monthly budget for this month!
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    <% } %>
+                </div>
+
+                <!-- Welcome Banner -->
+                <div class="welcome-banner text-white p-4 p-md-5 my-4 dashboard-hero">
+                    <div class="decor-shape shape-1"></div>
+                    <div class="decor-shape shape-2"></div>
+                    <div class="d-flex justify-content-between align-items-start flex-wrap">
+                        <div>
+                            <h2 class="hero-title mb-1">Hello, <%= user.name %>!</h2>
+                            <p class="hero-sub mb-2">Welcome back — here's your financial summary for <%= currentMonth %>.</p>
+                            <div class="d-flex hero-stats">
+                                <div class="me-3 text-white-75">
+                                    <div class="small">Total Income</div>
+                                    <div class="h5 fw-bold">₹<%= formatDecimal(totalIncome) %></div>
+                                </div>
+                                <div class="me-3 text-white-75">
+                                    <div class="small">Total Expenses</div>
+                                    <div class="h5 fw-bold">₹<%= formatDecimal(totalExpenses) %></div>
+                                </div>
+                                <div class="text-white-75">
+                                    <div class="small">Current Balance</div>
+                                    <div class="h5 fw-bold">₹<%= formatDecimal(balance) %></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-end d-none d-md-block">
+                            <a href="/dashboard/reports" class="btn btn-outline-light">View Reports</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Financial Cards (First Row: Basic Totals) -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-4">
+                        <div class="card stat-card p-4 bg-white">
+                            <div class="d-flex align-items-center">
+                                <div class="card-icon bg-success-light text-success me-3">
+                                    <i class="bi bi-wallet-fill"></i>
+                                </div>
+                                <div>
+                                    <h6 class="text-muted mb-1">Total Income</h6>
+                                    <h4 class="fw-bold mb-0 text-success">₹<%= formatDecimal(totalIncome) %></h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card mini-chart-card p-3 bg-white">
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">Income vs Expenses</h6>
+                                    <p class="small text-muted mb-0">Overview of this month's inflow and outflow</p>
+                                </div>
+                                <div style="width:240px;">
+                                    <canvas id="incomeExpenseChart" class="chart-canvas"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card stat-card p-4 bg-white">
+                            <div class="d-flex align-items-center">
+                                <div class="card-icon bg-danger-light text-danger me-3">
+                                    <i class="bi bi-cart-dash-fill"></i>
+                                </div>
+                                <div>
+                                    <h6 class="text-muted mb-1">Total Expenses</h6>
+                                    <h4 class="fw-bold mb-0 text-danger">₹<%= formatDecimal(totalExpenses) %></h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card stat-card p-4 bg-white">
+                            <div class="d-flex align-items-center">
+                                <div class="card-icon bg-primary-light text-primary me-3">
+                                    <i class="bi bi-bank2"></i>
+                                </div>
+                                <div>
+                                    <h6 class="text-muted mb-1">Current Balance</h6>
+                                    <h4 class="fw-bold mb-0 text-primary">₹<%= formatDecimal(balance) %></h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Budget & Savings Cards (Second Row: Budget Details) -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-4">
+                        <div class="card stat-card p-4 bg-white">
+                            <div class="d-flex align-items-center">
+                                <div class="card-icon bg-warning-light text-warning me-3">
+                                    <i class="bi bi-sliders"></i>
+                                </div>
+                                <div>
+                                    <h6 class="text-muted mb-1">Monthly Budget Limit</h6>
+                                    <h4 class="fw-bold mb-0"><%= monthlyBudget > 0 ? '₹' + formatDecimal(monthlyBudget) : 'Not Set' %></h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card stat-card p-4 bg-white">
+                            <div class="d-flex align-items-center">
+                                <div class="card-icon me-3 <%= remainingBudget >= 0 ? 'bg-success-light text-success' : 'bg-danger-light text-danger' %>">
+                                    <i class="bi bi-cash-coin"></i>
+                                </div>
+                                <div>
+                                    <h6 class="text-muted mb-1">Remaining Budget</h6>
+                                    <h4 class="fw-bold mb-0 <%= remainingBudget >= 0 ? 'text-success' : 'text-danger' %>">₹<%= formatDecimal(remainingBudget) %></h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card stat-card p-4 bg-white">
+                            <div class="d-flex align-items-center">
+                                <div class="card-icon bg-success-light text-success me-3">
+                                    <i class="bi bi-piggy-bank-fill"></i>
+                                </div>
+                                <div>
+                                    <h6 class="text-muted mb-1">Total Savings</h6>
+                                    <h4 class="fw-bold mb-0 text-success">₹<%= formatDecimal(totalSavings) %></h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Middle Section: Recent Transactions & Monthly Summary Table -->
+                <div class="row g-4">
+                    
+                    <!-- Recent Transactions -->
+                    <div class="col-lg-8">
+                        <div class="card border-0 shadow-sm p-4 h-100 bg-white">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h5 class="fw-bold mb-0">Recent Transactions</h5>
+                                <a href="/dashboard/reports" class="btn btn-sm btn-outline-primary px-3">View All</a>
+                            </div>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Description</th>
+                                            <th>Date</th>
+                                            <th>Source / Category</th>
+                                            <th>Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% recentTransactions.forEach(function(tx) { %>
+                                            <tr>
+                                                <td>
+                                                    <span class="fw-semibold d-block"><%= tx.description ? tx.description : 'Transaction' %></span>
+                                                </td>
+                                                <td><%= formatDate(tx.date) %></td>
+                                                <td><%= tx.categoryOrSource %></td>
+                                                <td>
+                                                    <span class="badge py-2 px-3 rounded-pill <%= tx.type === 'INCOME' ? 'badge-income' : 'badge-expense' %>">
+                                                        <%= tx.type === 'INCOME' ? '+₹' + formatDecimal(tx.amount) : '-₹' + formatDecimal(tx.amount) %>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        <% }); %>
+                                        <% if (recentTransactions.length === 0) { %>
+                                            <tr>
+                                                <td colspan="4" class="text-center text-muted py-4">No recent transactions. Add income or expense records!</td>
+                                            </tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Monthly Summary Card -->
+                    <div class="col-lg-4">
+                        <div class="card border-0 shadow-sm p-4 h-100 bg-white">
+                            <h5 class="fw-bold mb-4">Current Month Summary</h5>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                                    <span>Income this Month</span>
+                                    <span class="text-success fw-bold">₹<%= formatDecimal(monthlyIncome) %></span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                                    <span>Expenses this Month</span>
+                                    <span class="text-danger fw-bold">₹<%= formatDecimal(monthlyExpenses) %></span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                                    <span>Net Monthly Balance</span>
+                                    <span class="fw-bold <%= (monthlyIncome - monthlyExpenses) >= 0 ? 'text-success' : 'text-danger' %>">
+                                        ₹<%= formatDecimal(monthlyIncome - monthlyExpenses) %>
+                                    </span>
+                                </li>
+                            </ul>
+                            
+                            <div class="mt-4 p-3 bg-light rounded text-center">
+                                <span class="small text-muted d-block mb-1">Set or modify budgets instantly</span>
+                                <a href="/dashboard/budget" class="btn btn-sm btn-primary w-100">Manage Budget</a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <%- include('partials/footer_scripts') %>
+    <script>
+        // Render a doughnut chart for income vs expenses
+        document.addEventListener('DOMContentLoaded', function() {
+            var ctx = document.getElementById('incomeExpenseChart');
+            if(!ctx) return;
+            var income = <%= totalIncome %>;
+            var expense = <%= totalExpenses %>;
+            var chart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Income', 'Expenses'],
+                    datasets: [{
+                        data: [income, expense],
+                        backgroundColor: ['#10b981', '#ef4444'],
+                        hoverOffset: 6,
+                    }]
+                },
+                options: {
+                    plugins: { legend: { position: 'bottom' } },
+                    maintainAspectRatio: false
+                }
+            });
+        });
+    </script>
+</body>
+</html>

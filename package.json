@@ -1,0 +1,28 @@
+{
+  "name": "money-manager",
+  "version": "1.0.0",
+  "description": "Money Manager application developed using Node.js, Express, MongoDB and EJS",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "mongodb",
+    "ejs",
+    "money-manager"
+  ],
+  "author": "Manasa M",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "multer": "^1.4.5-lts.1",
+    "mysql2": "^3.23.1",
+    "sequelize": "^6.37.8"
+  }
+}
