@@ -1,18 +1,27 @@
 :root {
+    --bg-primary: #050816;
+    --bg-secondary: #0B1020;
+    --bg-card: rgba(255,255,255,0.08);
+
     --primary-color: #8B5CF6;
     --secondary-color: #3B82F6;
     --accent-color: #06B6D4;
+
     --success-color: #22C55E;
     --warning-color: #F59E0B;
     --danger-color: #EF4444;
-    --white: #FFFFFF;
-    --secondary-text: #CBD5E1;
-    --borders: rgba(255, 255, 255, 0.15);
-    --card-bg: rgba(255, 255, 255, 0.08);
-    --card-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
-    --button-shadow: 0 10px 25px rgba(139, 92, 246, 0.35);
-    --hover-shadow: 0 20px 40px rgba(59, 130, 246, 0.40);
-    --transition-all: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    --text-primary: #FFFFFF;
+    --text-secondary: #CBD5E1;
+
+    --border-color: rgba(255,255,255,0.12);
+
+    --glass-blur: blur(20px);
+
+    --card-shadow: 0 20px 45px rgba(0,0,0,.35);
+    --hover-shadow: 0 20px 40px rgba(59,130,246,.35);
+
+    --transition: all .3s ease;
 }
 
 body {
@@ -164,7 +173,7 @@ nav.navbar .fw-semibold {
     color: #ffffff !important;
 }
 
-/* Tables in Glass style */
+/* Tables in Glass / Neon Black style */
 .table {
     color: #ffffff !important;
     background: transparent !important;
@@ -173,27 +182,39 @@ nav.navbar .fw-semibold {
 }
 
 .table thead th {
-    background: rgba(255, 255, 255, 0.05) !important;
-    color: var(--secondary-text) !important;
+    background: rgba(10, 15, 30, 0.8) !important;
+    color: var(--accent-color) !important;
     font-weight: 600;
-    border: none !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
     padding: 1rem !important;
 }
 
-.table tbody tr {
-    background: rgba(255, 255, 255, 0.02);
+.table tbody tr td {
+    background-color: rgba(7, 7, 18, 0.75) !important;
+    color: rgba(255, 255, 255, 0.95) !important;
+    padding: 1rem !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    vertical-align: middle;
     transition: var(--transition-all);
 }
 
-.table tbody tr:hover {
-    background: rgba(255, 255, 255, 0.06) !important;
+.table tbody tr td:first-child {
+    border-left: 1px solid rgba(255, 255, 255, 0.05) !important;
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
 }
 
-.table tbody td {
-    padding: 1rem !important;
-    border: none !important;
-    vertical-align: middle;
-    color: rgba(255, 255, 255, 0.95);
+.table tbody tr td:last-child {
+    border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+.table tbody tr:hover td {
+    background-color: rgba(139, 92, 246, 0.12) !important;
+    border-color: rgba(139, 92, 246, 0.3) !important;
+    color: #ffffff !important;
 }
 
 /* Glass Buttons */
@@ -341,4 +362,42 @@ nav.navbar .fw-semibold {
 }
 ::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.2);
+}
+
+/* ==============================
+   Income & Expense Table Theme
+   ============================== */
+
+.table{
+    color:#ffffff !important;
+}
+
+.table thead th{
+    background:rgba(255,255,255,.08)!important;
+    color:#ffffff!important;
+    border-color:rgba(255,255,255,.12)!important;
+}
+
+.table tbody tr{
+    background:transparent!important;
+}
+
+.table tbody td{
+    background:transparent!important;
+    color:#ffffff!important;
+    border-color:rgba(255,255,255,.08)!important;
+}
+
+.table-hover tbody tr:hover{
+    background:rgba(139,92,246,.12)!important;
+}
+
+.text-muted{
+    color:#CBD5E1!important;
+}
+
+/* Remove Bootstrap white card */
+
+.bg-white{
+    background:transparent!important;
 }
